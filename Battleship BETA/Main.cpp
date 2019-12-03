@@ -15,10 +15,10 @@ bool gameover;
 char B_field[height][width];
 int B_matryx[4][2];
 
-int B_ban[1000][2];
+int B_ban[1000][2];// f
 int B_last_point = 0;
 int ship_coord_B[20][2];
-int Life_B = 20;
+int Life_B = 20; 
 
 
 
