@@ -15,7 +15,7 @@ bool gameover;
 char B_field[height][width];
 int B_matryx[4][2];
 
-int B_ban[1000][2];// f
+int B_ban[1000][2];
 int B_last_point = 0;
 int ship_coord_B[20][2];
 int Life_B = 20; 
@@ -50,7 +50,7 @@ int destroed_deck_P = 0;
 bool END_GAME = false;
 int matr_for_thinked[4][2];
 
-bool P_setup = true;
+bool player_ship_arrangement = true;
 
 struct P_list *p_head_list = NULL;
 struct P_list *p_root_list = NULL;
@@ -76,13 +76,10 @@ void B_Draw()// работает все нормально, чекнуть сдвиги
 		for (int i = 0; i < width; i++)
 		{
 			printf("(%c)", B_field[j][i]);
-
-			if (i == (width - 1))
-				printf("\n");
 		}
+		printf("\n");
 	}
 }
-
 void P_Draw()// работает все нормально, чекнуть сдвиги
 {
 	system("cls");
@@ -100,13 +97,10 @@ void P_Draw()// работает все нормально, чекнуть сдвиги
 		for (int i = 0; i < width; i++)
 		{
 			printf("(%c)", P_field[j][i]);
-
-			if (i == (width - 1))
-				printf("\n");
 		}
+		printf("\n");
 	}
 }
-
 void T_Draw()
 {
 	printf("\n\n\n    ");
@@ -130,12 +124,45 @@ void T_Draw()
 }
 
 
+void view(void)
+{
+	system("cls");
+
+	for (int f = 0; f < 2; f++) 
+	{
+		printf("    ");
+		for (int i = 0; i < 10; i++)
+		{
+			printf("%d  ", i);
+		}
+	}
+	printf("\n");
+
+	for (int j = 0; j < height; j++)
+	{
+		printf(" %d ", j);
+		for (int i = 0; i < width; i++)
+		{
+			printf("(%c)", P_field[j][i]);
+		}
+		printf(" ");
+		printf(" %d ", j);
+		for (int i = 0; i < width; i++)
+		{
+			printf("(%c)", P_T_field[j][i]);
+		}
+
+		printf("\n");
+	}
+	printf("           Your field          "); printf("                Your target          \n");
+}
 void DRAW(void)
 {
-	P_Draw();
-	printf("\n\n\n");
-	if (P_setup) //инструкция
+	if (player_ship_arrangement) //инструкция
 	{   
+		P_Draw();
+		printf("\n\n\n");
+
 		printf("1 deck:  #                                 * - beginning coord\n");
 		//2
 		printf("2 deck:\n");
@@ -153,8 +180,9 @@ void DRAW(void)
 		printf("        #                           #           ##\n");
 		printf("        #\n");
 	}
-	else {
-		T_Draw();
+	else 
+	{
+		view();
 	}
 }
 
@@ -200,7 +228,6 @@ void addelem_B_list(int deck, int type, int num)
 	b_temporary->b_next = NULL;
 	b_head_list = b_temporary;
 }
-
 void addelem_P_list(int deck, int type, int num)
 {
 	struct P_list *temporary;
@@ -244,7 +271,6 @@ void B_listprint(B_list *list_p)//линейный список кораблей в структ
 		b_temporary = b_temporary->b_next; // переход к следующему узлу
 	} while (b_temporary != NULL);
 }
-
 void P_listprint(P_list *list_p)//линейный список кораблей в структ
 {
 	struct P_list *p_temporary;
@@ -608,56 +634,15 @@ bool P_Check(int deck)// true
 	return false;
 }
 
-void B_Setup()
+void fields_Setup() // объединил 3 функции в одну, то есть минус 4 цикла
 {
-	for (int j = 0; j < height; j++)
+	for (int y = 0; y < height; y++)
 	{
-		for (int i = 0; i < width; i++)
+		for (int x = 0; x < width; x++)
 		{
-			if (i == 0)
-			{
-				B_field[j][i] = (char)i;
-			}
-			else
-			{
-				B_field[j][i] = ' ';
-			}
-		}
-	}
-}
-
-void P_Setup()
-{
-	for (int j = 0; j < height; j++)
-	{
-		for (int i = 0; i < width; i++)
-		{
-			if (i == 0)
-			{
-				P_field[j][i] = (char)i;
-			}
-			else
-			{
-				P_field[j][i] = ' ';
-			}
-		}
-	}
-}
-
-void T_Setup()
-{
-	for (int j = 0; j < height; j++)
-	{
-		for (int i = 0; i < width; i++)
-		{
-			if (i == 0)
-			{
-				P_T_field[j][i] = (char)i;
-			}
-			else
-			{
-				P_T_field[j][i] = ' ';
-			}
+			B_field[y][x] = ' ';
+			P_field[y][x] = ' ';
+			P_T_field[y][x] = ' ';
 		}
 	}
 }
@@ -1624,19 +1609,16 @@ int main(void)
 {
 	
 	srand(time(NULL));
-	P_Setup();
-	B_Setup();
+	fields_Setup();
+	view();
 	DRAW();
 	P_Enter();
-	P_setup = false;
+	player_ship_arrangement = false;
 	B_Enter();
 	create_mass_of_targets();
 	game();
-	//B_Draw();
-	//listprint(&list_p);
 	
-	/*game();*/
-	_getch();
+	getchar();
 	
 	return 0;
 }
